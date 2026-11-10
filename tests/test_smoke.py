@@ -27,6 +27,22 @@ class OrderSmokeTests(unittest.TestCase):
         self.assertEqual(quote["delivery_cents"], 600)
         self.assertEqual(quote["total_cents"], 7800)
 
+    def test_zero_quantity_is_invalid(self):
+        items = [{"product_id": "notebook", "quantity": 0}]
+        with self.assertRaises(ValueError):
+            self.service.quote("regular", items)
+        with self.assertRaises(ValueError):
+            self.service.place_order("regular", items)
+        self.assertFalse(self.path.exists())
+
+    def test_invalid_customer_type_is_rejected(self):
+        items = [{"product_id": "notebook", "quantity": 1}]
+        with self.assertRaises(ValueError):
+            self.service.quote("invalid", items)
+        with self.assertRaises(ValueError):
+            self.service.place_order("invalid", items)
+        self.assertFalse(self.path.exists())
+
     def test_order_can_be_reopened(self):
         order = self.service.place_order("regular", [{"product_id": "mug", "quantity": 1}])
         self.assertEqual(order["order_id"], "ORD-0001")
