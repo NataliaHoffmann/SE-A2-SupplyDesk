@@ -27,6 +27,12 @@ class OrderSmokeTests(unittest.TestCase):
         self.assertEqual(quote["delivery_cents"], 600)
         self.assertEqual(quote["total_cents"], 7800)
 
+    def test_express_delivery_fee(self):
+        quote = self.service.quote(
+            "regular", [{"product_id": "notebook", "quantity": 2}], "express"
+        )
+        self.assertEqual(quote["delivery_cents"], 1200)
+
     def test_zero_quantity_is_invalid(self):
         items = [{"product_id": "notebook", "quantity": 0}]
         with self.assertRaises(ValueError):
